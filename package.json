@@ -1,0 +1,21 @@
+{
+  "name": "pm",
+  "version": "1.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khanaimal0301-bot/secure-npm-package.git"
+  },
+  "bugs": {
+    "url": "https://github.com/khanaimal0301-bot/secure-npm-package/issues"
+  },
+  "homepage": "https://github.com/khanaimal0301-bot/secure-npm-package#readme",
+  "description": ""
+}
