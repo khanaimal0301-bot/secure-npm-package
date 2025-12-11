@@ -1,39 +1,44 @@
-
-name: Secure CI
+name: Secure Publish Pipeline
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - "v*.*.*"
 
 permissions:
   contents: read
-  packages: read
-  actions: read
+  id-token: write
+  packages: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1   # security: shallow clone
+      - uses: actions/checkout@v4
 
-      - name: Validate dependency signatures
-        run: |
-          echo "Add your dependency validation commands here"
-
-      - name: Setup Node
+      - name: Use Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 18
+          registry-url: "https://registry.npmjs.org"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test
+      - name: Audit Dependencies
+        run: npm audit --production
+
+      - name: Generate SBOM
+        run: npx @cyclonedx/cyclonedx-npm --output-format json --output-file sbom.json
+
+      - name: Build Package
+        run: npm pack
+
+      - name: Sign artifact with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v2
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
